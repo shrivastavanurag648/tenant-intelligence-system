@@ -1,0 +1,51 @@
+{
+  "name": "tenant-intelligence-system",
+  "version": "1.0.0",
+  "description": "Demo-ready tenant intelligence system with anonymous complaint submission and AI classification",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "build": "npm run build --workspace=shared && npm run build --workspace=server && npm run build --workspace=client",
+    "build:client": "npm run build --workspace=client",
+    "build:server": "npm run build --workspace=server",
+    "build:shared": "npm run build --workspace=shared",
+    "start": "npm run start:production --workspace=server",
+    "start:production": "cd server && npm run start:production",
+    "test": "npm run test --workspaces",
+    "test:unit": "npm run test:unit --workspaces",
+    "test:property": "npm run test:property --workspaces",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "setup": "npm install && npm run build:shared",
+    "setup:unix": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
+    "setup:windows": "scripts\\setup.bat",
+    "demo:setup": "npm run demo:setup:unix",
+    "demo:setup:unix": "chmod +x scripts/demo-setup.sh && ./scripts/demo-setup.sh",
+    "demo:setup:windows": "scripts\\demo-setup.bat",
+    "demo:seed": "npm run db:seed --workspace=server",
+    "demo:analyze": "npm run db:analyze --workspace=server",
+    "build:production": "npm run build:production:unix",
+    "build:production:unix": "chmod +x scripts/build-production.sh && ./scripts/build-production.sh",
+    "build:production:windows": "scripts\\build-production.bat",
+    "docker:build": "docker build -t tenant-intelligence .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

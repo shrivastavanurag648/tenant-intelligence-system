@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  tenant-intelligence:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_PATH=/app/server/data/tenant_intelligence.db
+      - UPLOAD_DIR=/app/server/uploads
+      - MAX_FILE_SIZE=5242880
+    volumes:
+      - tenant_data:/app/server/data
+      - tenant_uploads:/app/server/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Nginx reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - tenant-intelligence
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  tenant_data:
+    driver: local
+  tenant_uploads:
+    driver: local
